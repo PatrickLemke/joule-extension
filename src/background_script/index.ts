@@ -1,15 +1,20 @@
 import qs from 'query-string';
 import { browser, Runtime } from 'webextension-polyfill-ts';
+import { OriginData } from 'utils/prompt';
+import { PROMPT_TYPE } from '../webln/types';
+import getNodeInfo from './getNodeInfo';
 
 interface PromptRequest {
   type: string;
   args: any;
+  origin: OriginData;
 }
 
 function openPrompt(request: PromptRequest): Promise<any> {
   const urlParams = qs.stringify({
     type: request.type,
     args: JSON.stringify(request.args),
+    origin: JSON.stringify(request.origin),
   });
 
   return new Promise((resolve, reject) => {
@@ -49,6 +54,11 @@ function openPrompt(request: PromptRequest): Promise<any> {
 // Background manages communication between page and its windows
 browser.runtime.onMessage.addListener((request: any) => {
   if (request && request.application === 'Joule' && request.prompt) {
+    // Special case -- get info requires no prompt, just respond
+    if (request.type === PROMPT_TYPE.INFO) {
+      return getNodeInfo().then(data => ({ data }));
+    }
+
     // WebLNProvider request, will require window open
     return openPrompt(request)
       .then(data => {

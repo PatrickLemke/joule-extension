@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Joule",
   "description": "Make payments and use your Lightning identity in the browser",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "icons": {
     "16": "icon16.png",
     "48": "icon48.png",
@@ -36,11 +36,13 @@
   ],
   "permissions": [
     "storage",
+    "clipboardWrite",
+    "activeTab"
+  ],
+  "optional_permissions": [
     "notifications",
-    "webRequest",
     "http://*/",
-    "https://*/",
-    "file://*/*"
+    "https://*/"
   ],
   "applications": {
     "gecko": {
